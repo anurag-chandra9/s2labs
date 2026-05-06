@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id            String       @id @unique
+  name          String
+  email         String       @unique
+  role          Role
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  institutionId String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  trainers_batches Batch[]      @relation("BatchTrainers")
+  students_batches Batch[]      @relation("BatchStudents")
+  sessions         Session[]
+  attendances      Attendance[]
+}
+
+model Institution {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  batches   Batch[]
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Batch {
+  id            String      @id @default(uuid())
+  name          String
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  institutionId String
+  trainers      User[]      @relation("BatchTrainers")
+  students      User[]      @relation("BatchStudents")
+  description   String?
+  inviteCode    String?     @unique
+  sessions      Session[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Session {
+  id          String       @id @default(uuid())
+  title       String
+  batch       Batch        @relation(fields: [batchId], references: [id])
+  batchId     String
+  trainer     User         @relation(fields: [trainerId], references: [id])
+  trainerId   String
+  date        DateTime
+  startTime   String
+  endTime     String
+  attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  session   Session          @relation(fields: [sessionId], references: [id])
+  sessionId String
+  student   User             @relation(fields: [studentId], references: [id])
+  studentId String
+  status    AttendanceStatus
+  markedAt  DateTime         @default(now())
+
+  @@unique([sessionId, studentId])
+}
+
+enum Role {
+  student
+  trainer
+  institution
+  programme_manager
+  monitoring_officer
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+}

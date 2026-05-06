@@ -1,0 +1,7 @@
+Full Name: [Your Name]
+Email: [Your Email]
+Phone: [Your Phone]
+GitHub: [Your GitHub Profile URL]
+
+Most Challenging Part:
+Setting up the Neon database connection — ran into DNS resolution issues on my local Mac that required switching to Google DNS (8.8.8.8). Also had to understand the difference between Neon's pooler and direct connection URLs for Prisma migrations vs runtime queries.
