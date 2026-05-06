@@ -1,8 +1,6 @@
 const prisma = require('../lib/prisma');
 const crypto = require('crypto');
-
-const getRole = (req) =>
-  req.auth.sessionClaims?.metadata?.role || req.auth.sessionClaims?.public_metadata?.role;
+const { getRole } = require('../middleware/clerk');
 
 // POST /batches — Trainer or Institution creates a batch
 const createBatch = async (req, res) => {
